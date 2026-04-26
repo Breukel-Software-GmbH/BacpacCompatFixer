@@ -36,22 +36,43 @@
             <div class="card">
                 <div class="card-body">
                     <div class="mb-3">
-                        <label for="fileUpload" class="form-label">Upload .bacpac file:</label>
-                        <InputFile id="fileUpload" class="form-control" OnChange="HandleFileSelected" accept=".bacpac" disabled="@isProcessing" />
-                        @if (!string.IsNullOrEmpty(selectedFileName))
-                        {
-                            <small class="text-muted">Selected: @selectedFileName (@FormatFileSize(selectedFileSize))</small>
-                        }
-                    </div>
+                        <label class="form-label">Upload .bacpac file:</label>
 
-                    <button class="btn btn-primary" @onclick="ProcessBacpac" disabled="@(isProcessing || uploadedFilePath == null)">
-                        @if (isProcessing)
+                        @if (selectedFileName != null)
                         {
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            <span> Processing...</span>
+                            <div class="upload-selected scale-in">
+                                <span class="upload-selected-icon">📄</span>
+                                <div class="upload-selected-info">
+                                    <div class="upload-selected-name">@selectedFileName</div>
+                                    <div class="upload-selected-size">@FormatFileSize(selectedFileSize)</div>
+                                </div>
+                                @if (!isProcessing)
+                                {
+                                    <button class="upload-selected-remove" @onclick="ClearFile" title="Entfernen">✕</button>
+                                }
+                            </div>
                         }
                         else
                         {
+                            <div class="upload-zone fade-in" role="button" tabindex="0" aria-label="Datei auswählen">
+                                <div class="upload-icon">📤</div>
+                                <div class="upload-text">.bacpac-Datei hierher ziehen</div>
+                                <div class="upload-hint">oder</div>
+                                <label class="upload-browse-btn" for="fileUpload">Datei auswählen</label>
+                                <input type="file" id="fileUpload" class="form-control d-none" OnChange="HandleFileSelected" accept=".bacpac" disabled="@isProcessing" />
+                            </div>
+                        }
+                    </div>
+
+                    <button class="btn btn-primary btn-lg" @onclick="ProcessBacpac" disabled="@(isProcessing || uploadedFilePath == null)">
+                        @if (isProcessing)
+                        {
+                            <span class="loading-spin spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                            <span>Processing...</span>
+                        }
+                        else
+                        {
+                            <span class="me-1">🚀</span>
                             <span>Process .bacpac</span>
                         }
                     </button>
@@ -320,6 +341,14 @@
             len = len / 1024;
         }
         return $"{len:0.##} {sizes[order]}";
+    }
+
+    private void ClearFile()
+    {
+        selectedFileName = string.Empty;
+        selectedFileSize = 0;
+        CleanupUploadedFile();
+        StateHasChanged();
     }
 
     private void CleanupUploadedFile()
