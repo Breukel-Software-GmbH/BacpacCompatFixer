@@ -132,18 +132,17 @@ The Blazor application is published as a Linux container.
 
 The script detects Podman or Docker automatically and serves the app at http://localhost:8680.
 
-### Build and push the image (GHCR)
+### Build the image
 
 ```bash
 docker build -f src/BacpacCompatFixer.Blazor/Dockerfile -t bacpaccompatfixer:latest .
-docker push bacpaccompatfixer:latest
 ```
 
-### Azure App Service
+The image can be published to any container registry (`docker tag` + `docker push`).
 
-- Production: https://<your-app>.azurewebsites.net
-- Custom domain (planned): https://<your-custom-domain>
-- Configuration is provided via App Settings; confidential values are referenced from Azure Key Vault through a Managed Identity and are not stored in the repository.
+### Hosting
+
+Deployment is container-based (Linux App Service). Configuration is provided via App Settings; confidential values are referenced from Azure Key Vault through a Managed Identity and are not stored in the repository.
 
 ## License
 MIT

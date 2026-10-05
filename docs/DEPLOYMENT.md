@@ -2,7 +2,7 @@
 
 This guide provides instructions for deploying the BacpacCompatFixer Blazor application to Azure App Service.
 
-> **Note:** The current production deployment runs as a Linux container from GHCR (`bacpaccompatfixer`) on Azure App Service (see [README.md](../README.md#deployment-container)). The sections below describe alternative, older deployment paths (zip deploy / Web Deploy).
+> **Note:** The current production deployment runs as a Linux container on Azure App Service (see [README.md](../README.md#deployment-container)). The sections below describe alternative, older deployment paths (zip deploy / Web Deploy).
 
 ## Prerequisites
 

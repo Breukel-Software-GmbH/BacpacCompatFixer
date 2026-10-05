@@ -80,13 +80,14 @@ cd src/BacpacCompatFixer.Blazor
 dotnet publish -c Release
 ```
 
-### Container Image (GHCR)
+### Container Image
 
 ```bash
 # Build from the repository root
 docker build -f src/BacpacCompatFixer.Blazor/Dockerfile -t bacpaccompatfixer:latest .
-docker push bacpaccompatfixer:latest
 ```
+
+The image can be pushed to any container registry (`docker tag` + `docker push`).
 
 Local container run: `.\scripts\dev\run-local.ps1` (detects Podman or Docker, serves at http://localhost:8680).
 
