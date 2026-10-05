@@ -31,7 +31,7 @@ BacpacCompatFixer/
 
 ```bash
 # Clone the repository
-git clone https://github.com/mbreukel/BacpacCompatFixer.git
+git clone https://github.com/Breukel-Software-GmbH/BacpacCompatFixer.git
 cd BacpacCompatFixer
 
 # Build all projects
@@ -61,7 +61,7 @@ cd src/BacpacCompatFixer.Blazor
 dotnet run
 ```
 
-Then open your browser to the URL shown in the console (typically http://localhost:5157).
+Then open your browser to the URL shown in the console. The local launch profile (`launchSettings.json`) is developer-specific and not part of the repository, so the port may differ.
 
 ## Publishing Applications
 
@@ -79,6 +79,16 @@ dotnet publish -c Release -r linux-x64 --self-contained
 cd src/BacpacCompatFixer.Blazor
 dotnet publish -c Release
 ```
+
+### Container Image (GHCR)
+
+```bash
+# Build from the repository root
+docker build -f src/BacpacCompatFixer.Blazor/Dockerfile -t bacpaccompatfixer:latest .
+docker push bacpaccompatfixer:latest
+```
+
+Local container run: `.\scripts\dev\run-local.ps1` (detects Podman or Docker, serves at http://localhost:8680).
 
 ## Using the Core Library
 

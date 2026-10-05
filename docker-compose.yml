@@ -1,0 +1,11 @@
+services:
+  bacpac-compat-fixer:
+    build:
+      context: .
+      dockerfile: src/BacpacCompatFixer.Blazor/Dockerfile
+    platform: linux/amd64
+    container_name: bacpac-compat-fixer
+    ports:
+      - "8680:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development

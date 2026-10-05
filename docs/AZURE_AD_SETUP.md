@@ -6,7 +6,7 @@ This guide explains how to configure Microsoft Identity (Azure AD/Entra ID) auth
 
 - An Azure subscription
 - Access to Azure Portal (https://portal.azure.com)
-- .NET 9 SDK installed
+- .NET 10 SDK installed
 
 ## Step 1: Register Application in Azure AD
 
@@ -21,8 +21,8 @@ This guide explains how to configure Microsoft Identity (Azure AD/Entra ID) auth
      - `Accounts in any organizational directory (Any Azure AD directory - Multitenant)` - for business accounts only
    - **Redirect URI**: 
      - Type: Web
-     - URI: `https://localhost:5001/signin-oidc` (for development)
-     - Add production URL when deploying: `https://yourdomain.com/signin-oidc`
+     - URI: `https://localhost:5001/signin-oidc` (for development; adjust to your local port if needed)
+     - Add production URLs when deploying, e.g. `https://<your-app>.azurewebsites.net/signin-oidc` and `https://<your-custom-domain>/signin-oidc`
 6. Click **Register**
 
 ## Step 2: Configure Authentication
@@ -36,7 +36,7 @@ This guide explains how to configure Microsoft Identity (Azure AD/Entra ID) auth
    - ✅ **ID tokens** (used for hybrid flows)
 5. Under **Logout URL**, add:
    - `https://localhost:5001/signout-callback-oidc` (for development)
-   - Add production URL when deploying
+   - Add production URLs when deploying, e.g. `https://<your-app>.azurewebsites.net/signout-callback-oidc` and `https://<your-custom-domain>/signout-callback-oidc`
 6. Click **Save**
 
 ## Step 3: Create Client Secret
@@ -46,7 +46,7 @@ This guide explains how to configure Microsoft Identity (Azure AD/Entra ID) auth
 3. Add a description: `BacpacCompatFixer Secret`
 4. Choose an expiration period (recommended: 24 months)
 5. Click **Add**
-6. **IMPORTANT**: Copy the **Value** immediately - you'll need this for `ClientSecret` in appsettings.json
+6. **IMPORTANT**: Copy the **Value** immediately - you'll need this for `AzureAd:ClientSecret` (User Secrets for development, Azure Key Vault for production; never store it in the repository)
 7. ⚠️ You won't be able to see this value again after leaving the page
 
 ## Step 4: Configure API Permissions (Optional)
@@ -112,7 +112,7 @@ dotnet user-secrets set "AzureAd:ClientSecret" "YOUR_CLIENT_SECRET"
    dotnet run
    ```
 
-2. Navigate to `https://localhost:5001`
+2. Navigate to the URL shown in the console (typically https://localhost:5001)
 3. Click **Sign in** in the navigation bar
 4. You should be redirected to Microsoft login
 5. Sign in with your Microsoft account

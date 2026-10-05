@@ -23,7 +23,7 @@ This tool removes all elements and attributes related to AlwaysOn and XTP from m
 - Updates the checksum in origin.xml to match the cleaned model.xml
 - Optionally creates a backup of the original .bacpac if changes are made
 - Fast in-place update: only model.xml and origin.xml are extracted, modified, and replaced
-- Compatible with .NET 9
+- Compatible with .NET 10
 - Open source, MIT License
 - **Available as both Console and Blazor Web applications**
 - **🔐 Secure authentication with Microsoft accounts (Personal and Business via Azure AD/Entra ID)**
@@ -32,20 +32,21 @@ This tool removes all elements and attributes related to AlwaysOn and XTP from m
 
 ## Project Structure
 
-This solution consists of three projects:
+This solution consists of the following projects:
 
 - **BacpacCompatFixer.Core** - Class library containing the core functionality
 - **BacpacCompatFixer.Console** - Console application for command-line usage
 - **BacpacCompatFixer.Blazor** - Blazor Web application with a user-friendly interface
+- **docs** - Documentation project
 
 ## Requirements / Prerequisites
-- .NET 9 SDK or newer
+- .NET 10 SDK or newer
 - Windows, Linux, or macOS
 
 ## Installation / Build Instructions
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/BacpacCompatFixer.git
+   git clone https://github.com/Breukel-Software-GmbH/BacpacCompatFixer.git
    cd BacpacCompatFixer
    ```
 2. Build the project:
@@ -70,8 +71,8 @@ dotnet run -- <PathToBacpac> [--no-backup] [--backup-dir <Directory>]
 The Blazor web application requires authentication with a Microsoft account (Personal or Business via Azure AD/Entra ID).
 
 **Setup Steps:**
-1. Configure Azure AD authentication (see [AZURE_AD_SETUP.md](AZURE_AD_SETUP.md) for detailed instructions)
-2. Update `appsettings.json` with your Azure AD configuration
+1. Configure Azure AD authentication (see [docs/AZURE_AD_SETUP.md](docs/AZURE_AD_SETUP.md) for detailed instructions)
+2. Store `AzureAd:ClientId` and `AzureAd:ClientSecret` in User Secrets (`dotnet user-secrets set ...`); the local launch profile (`launchSettings.json`) is developer-specific and not part of the repository
 3. Run the application
 
 ```
@@ -79,7 +80,7 @@ cd src/BacpacCompatFixer.Blazor
 dotnet run
 ```
 
-Then open your browser to the displayed URL (typically https://localhost:5001) and:
+Then open your browser to the URL shown in the console (typically https://localhost:5001) and:
 1. Sign in with your Microsoft account
 2. Navigate to the BacpacFixer page
 3. Upload your .bacpac file
@@ -111,13 +112,38 @@ dotnet run -- "C:\\temp\\arstest.bacpac" --no-backup
 
 ### Blazor Web Application
 1. Start the application: `dotnet run` from the `src/BacpacCompatFixer.Blazor` directory
-2. Navigate to the application in your web browser (typically https://localhost:5001)
+2. Navigate to the application in your web browser (URL shown in the console, typically https://localhost:5001)
 3. Sign in with your Microsoft account
 4. Navigate to the BacpacFixer page
 5. Upload your .bacpac file (up to 500 MB for free tier, 5 GB for premium)
 6. Optionally configure backup settings
 7. Click "Process .bacpac" to fix the file
 8. Download the processed file
+
+## Deployment (Container)
+
+The Blazor application is published as a Linux container.
+
+### Local container
+
+```powershell
+.\scripts\dev\run-local.ps1
+```
+
+The script detects Podman or Docker automatically and serves the app at http://localhost:8680.
+
+### Build and push the image (GHCR)
+
+```bash
+docker build -f src/BacpacCompatFixer.Blazor/Dockerfile -t bacpaccompatfixer:latest .
+docker push bacpaccompatfixer:latest
+```
+
+### Azure App Service
+
+- Production: https://<your-app>.azurewebsites.net
+- Custom domain (planned): https://<your-custom-domain>
+- Configuration is provided via App Settings; confidential values are referenced from Azure Key Vault through a Managed Identity and are not stored in the repository.
 
 ## License
 MIT
@@ -129,7 +155,7 @@ Michael Breukel
 Assisted by GitHub Copilot
 
 ## Keywords / Tags
-bacpac, SQL72014, SQL72045, AlwaysOn, XTP, In-Memory OLTP, import error, model.xml, origin.xml, checksum, compatibility, SQL Server, Azure SQL, fix, repair, remove, script execution error, open source, .NET 9, Copilot, Blazor, authentication, Azure AD, Entra ID, Microsoft Identity, rate limiting, security
+bacpac, SQL72014, SQL72045, AlwaysOn, XTP, In-Memory OLTP, import error, model.xml, origin.xml, checksum, compatibility, SQL Server, Azure SQL, fix, repair, remove, script execution error, open source, .NET 10, Copilot, Blazor, authentication, Azure AD, Entra ID, Microsoft Identity, rate limiting, security
 
 ## Security Features
 - **Authentication**: Secure sign-in with Microsoft accounts (Personal and Business)

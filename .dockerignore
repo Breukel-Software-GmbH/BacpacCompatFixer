@@ -1,0 +1,9 @@
+# Build-Artefakte nie in den Container kopieren.
+# Sonst überschreibt COPY src/ die Container-Restore-Ausgabe mit
+# Windows-obj/project.assets.json (Fallback-Pfad C:\...) und
+# dotnet publish --no-restore scheitert mit MSB4018.
+**/bin/
+**/obj/
+**/.vs/
+**/TestResults/
+**/*.user

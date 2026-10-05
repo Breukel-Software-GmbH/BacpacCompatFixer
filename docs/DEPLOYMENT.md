@@ -2,11 +2,13 @@
 
 This guide provides instructions for deploying the BacpacCompatFixer Blazor application to Azure App Service.
 
+> **Note:** The current production deployment runs as a Linux container from GHCR (`bacpaccompatfixer`) on Azure App Service (see [README.md](../README.md#deployment-container)). The sections below describe alternative, older deployment paths (zip deploy / Web Deploy).
+
 ## Prerequisites
 
 - Azure subscription
 - Azure CLI installed (or use Azure Cloud Shell)
-- .NET 9 SDK installed
+- .NET 10 SDK installed
 - Azure AD application configured (see [AZURE_AD_SETUP.md](AZURE_AD_SETUP.md))
 
 ## Option 1: Deploy to Azure App Service using Azure CLI
@@ -26,7 +28,7 @@ az login
 # Create resource group
 az group create --name $RESOURCE_GROUP --location $LOCATION
 
-# Create App Service Plan (Linux, .NET 9)
+# Create App Service Plan (Linux, .NET 10)
 az appservice plan create \
     --name $APP_SERVICE_PLAN \
     --resource-group $RESOURCE_GROUP \
@@ -39,7 +41,7 @@ az webapp create \
     --name $WEB_APP_NAME \
     --resource-group $RESOURCE_GROUP \
     --plan $APP_SERVICE_PLAN \
-    --runtime "DOTNET|9.0"
+    --runtime "DOTNET|10.0"
 ```
 
 ### Step 2: Configure Application Settings
