@@ -263,5 +263,5 @@ The application is ready for initial deployment with proper Azure AD configurati
 ## Contact Information
 
 For questions or support regarding this implementation:
-- GitHub Issues: https://github.com/mbreukel/BacpacCompatFixer/issues
+- GitHub Issues: https://github.com/Breukel-Software-GmbH/BacpacCompatFixer/issues
 - Documentation: See AZURE_AD_SETUP.md, DEPLOYMENT.md, MARKETPLACE_INTEGRATION.md
