@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BacpacCompatFixer.Core", "src\BacpacCompatFixer.Core\BacpacCompatFixer.Core.csproj", "{7FF4B057-8E09-48EE-932B-22D591DC4CEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "docs", "docs\docs.csproj", "{9D27C180-845D-4E98-8442-2E5D13BBF5EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BacpacCompatFixer.Docs", "docs\docs.csproj", "{9D27C180-845D-4E98-8442-2E5D13BBF5EE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BacpacCompatFixer.Console", "src\BacpacCompatFixer.Console\BacpacCompatFixer.Console.csproj", "{EF3365F4-92F5-4A93-A99B-62A18BD1FDD1}"
 EndProject
