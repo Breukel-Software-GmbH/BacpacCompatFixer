@@ -1,14 +1,14 @@
-# Premium Plan Management - Quick Start Guide
+﻿# Premium Plan Management - Quick Start Guide
 
-## ?? Was wurde implementiert?
+## ✅ Was wurde implementiert?
 
 Ein vollautomatisches System, das Benutzer basierend auf ihrem Microsoft Marketplace-Plan automatisch auf Premium hochstuft oder herabstuft.
 
-## ?? Konfiguration
+## ⚙️ Konfiguration
 
-### 1. Premium-Pl�ne definieren
+### 1. Premium-Pläne definieren
 
-�ffne `appsettings.json` und f�ge deine Premium-Plan-IDs hinzu:
+Öffne `appsettings.json` und füge deine Premium-Plan-IDs hinzu:
 
 ```json
 {
@@ -23,42 +23,42 @@ Ein vollautomatisches System, das Benutzer basierend auf ihrem Microsoft Marketp
 }
 ```
 
-**Wichtig**: Diese Plan-IDs m�ssen mit den Plan-IDs in deinem Microsoft Partner Center Angebot �bereinstimmen!
+**Wichtig**: Diese Plan-IDs müssen mit den Plan-IDs in deinem Microsoft Partner Center Angebot übereinstimmen!
 
 ### 2. Wo finde ich die Plan-IDs?
 
 1. Gehe zu [Microsoft Partner Center](https://partner.microsoft.com/)
-2. Navigiere zu: **Marketplace Angebote** ? **Dein SaaS-Angebot** ? **Plan overview**
-3. Kopiere die **Plan ID** f�r jeden Plan, der Premium-Zugang gew�hren soll
-4. F�ge diese IDs zum `PremiumPlanIds` Array hinzu
+2. Navigiere zu: **Marketplace Angebote** → **Dein SaaS-Angebot** → **Plan overview**
+3. Kopiere die **Plan ID** für jeden Plan, der Premium-Zugang gewähren soll
+4. Füge diese IDs zum `PremiumPlanIds` Array hinzu
 
-## ?? Wie es funktioniert
+## 🔄 Wie es funktioniert
 
 ### Automatische Upgrades/Downgrades
 
-Wenn ein Benutzer einen Plan abschlie�t:
+Wenn ein Benutzer einen Plan abschließt:
 
-1. **Microsoft sendet Webhook** ? `POST /api/MarketplaceWebhook`
-2. **System pr�ft Plan-ID** ? Ist sie in `PremiumPlanIds`?
+1. **Microsoft sendet Webhook** → `POST /api/MarketplaceWebhook`
+2. **System prüft Plan-ID** → Ist sie in `PremiumPlanIds`?
 3. **Automatisches Upgrade**:
-   - ? `HasPurchased = true`
-   - ? `Status = Active`
-   - ? `MaxFileSizeBytes = 5GB` (statt 500MB)
+   - ✅ `HasPurchased = true`
+   - ✅ `Status = Active`
+   - ✅ `MaxFileSizeBytes = 5GB` (statt 500MB)
 4. **Benutzer hat sofort Premium-Zugang**
 
-### Unterst�tzte Aktionen
+### Unterstützte Aktionen
 
 | Webhook-Aktion | Was passiert |
 |---------------|--------------|
-| `ChangePlan` | Pr�ft neuen Plan ? Upgrade/Downgrade |
-| `Unsubscribe` | Entfernt Premium-Zugang ? Free Tier |
-| `Suspend` | Sperrt Premium tempor�r |
+| `ChangePlan` | Prüft neuen Plan → Upgrade/Downgrade |
+| `Unsubscribe` | Entfernt Premium-Zugang → Free Tier |
+| `Suspend` | Sperrt Premium temporär |
 | `Reinstate` | Stellt Premium wieder her |
-| `Renew` | Best�tigt Premium-Status |
+| `Renew` | Bestätigt Premium-Status |
 
-## ?? Verwendung im Code
+## 💻 Verwendung im Code
 
-### Beispiel 1: Premium-Zugang pr�fen
+### Beispiel 1: Premium-Zugang prüfen
 
 ```csharp
 public class MyService
@@ -73,7 +73,7 @@ public class MyService
 }
 ```
 
-### Beispiel 2: Datei-Upload mit Gr��enpr�fung
+### Beispiel 2: Datei-Upload mit Größenprüfung
 
 ```csharp
 [HttpPost("upload")]
@@ -106,20 +106,20 @@ public async Task<IActionResult> ProcessBatch()
         return Unauthorized("This feature requires a Premium subscription");
     }
 
-    // Premium-Feature ausf�hren...
+    // Premium-Feature ausführen...
     return Ok();
 }
 ```
 
-## ?? Testen
+## 🧪 Testen
 
-### Manuell Premium-Zugang gew�hren (Entwicklung)
+### Manuell Premium-Zugang gewähren (Entwicklung)
 
 ```csharp
 // Inject den Service
 private readonly IPurchaseVerificationService _purchaseService;
 
-// Gew�hre Premium f�r Tests
+// Gewähre Premium für Tests
 await _purchaseService.UpdateSubscriptionAsync(
     subscriptionId: "test-sub-123",
     planId: "test-premium", // Muss in PremiumPlanIds sein!
@@ -127,7 +127,7 @@ await _purchaseService.UpdateSubscriptionAsync(
     userEmail: "test@example.com"
 );
 
-// Pr�fe Status
+// Prüfe Status
 var status = await _purchaseService.VerifyPurchaseAsync("test@example.com");
 Console.WriteLine($"Has Premium: {status.HasPurchased}"); // True
 Console.WriteLine($"Max File Size: {status.MaxFileSizeBytes / (1024*1024)}MB"); // 5120MB
@@ -147,20 +147,20 @@ Antwort:
 }
 ```
 
-## ?? Status-�bersicht
+## 📊 Status-Übersicht
 
-| Status | Beschreibung | Premium-Zugang | Max. Dateigr��e |
+| Status | Beschreibung | Premium-Zugang | Max. Dateigröße |
 |--------|--------------|----------------|-----------------|
-| `Free` | Kein Abo | ? | 500 MB |
-| `Active` | Premium aktiv | ? | 5 GB |
-| `Suspended` | Zahlungsproblem | ? | 500 MB |
-| `Unsubscribed` | Gek�ndigt | ? | 500 MB |
+| `Free` | Kein Abo | ❌ | 500 MB |
+| `Active` | Premium aktiv | ✅ | 5 GB |
+| `Suspended` | Zahlungsproblem | ⚠️ | 500 MB |
+| `Unsubscribed` | Gekündigt | ❌ | 500 MB |
 
-## ?? Erweiterte Konfiguration
+## ⚙️ Erweiterte Konfiguration
 
 ### Produktion: Datenbank statt Dateien
 
-Die aktuelle Implementierung nutzt Dateien (`App_Data/Purchases/`). F�r Produktion empfohlen:
+Die aktuelle Implementierung nutzt Dateien (`App_Data/Purchases/`). Für Produktion empfohlen:
 
 ```csharp
 // 1. Erstelle Entity
@@ -174,7 +174,7 @@ public class UserSubscription
     // ...
 }
 
-// 2. F�ge zu DbContext hinzu
+// 2. Füge zu DbContext hinzu
 public class ApplicationDbContext : DbContext
 {
     public DbSet<UserSubscription> UserSubscriptions { get; set; }
@@ -189,7 +189,7 @@ public async Task<UserPurchaseStatus> VerifyPurchaseAsync(string userId)
 }
 ```
 
-### Caching hinzuf�gen
+### Caching hinzufügen
 
 ```csharp
 // In Program.cs
@@ -208,35 +208,35 @@ public async Task<UserPurchaseStatus> VerifyPurchaseAsync(string userId)
 }
 ```
 
-## ?? Dateistruktur
+## 📁 Dateistruktur
 
 ```
 App_Data/
-??? Purchases/           # Benutzer-Abonnements
-?   ??? user1@example.com.json
-?   ??? user2@example.com.json
-??? Subscriptions/       # Subscription-ID Index
-    ??? sub-abc-123.txt  ? user1@example.com
-    ??? sub-def-456.txt  ? user2@example.com
+├── Purchases/           # Benutzer-Abonnements
+│   ├── user1@example.com.json
+│   └── user2@example.com.json
+└── Subscriptions/       # Subscription-ID Index
+    ├── sub-abc-123.txt  ← user1@example.com
+    └── sub-def-456.txt  ← user2@example.com
 ```
 
-## ?? Troubleshooting
+## 🐛 Troubleshooting
 
 ### Problem: Benutzer bekommt kein Premium
 
-**L�sung**:
-1. Pr�fe Plan-ID in Logs:
+**Lösung**:
+1. Prüfe Plan-ID in Logs:
    ```
    [Information] Handling plan change for subscription sub-123 to plan standard
    [Information] User plan updated to standard (Premium: False)
    ```
-2. F�ge "standard" zu `PremiumPlanIds` hinzu
-3. Webhook wird bei n�chster �nderung ausgel�st (oder manuell testen)
+2. Füge "standard" zu `PremiumPlanIds` hinzu
+3. Webhook wird bei nächster Änderung ausgelöst (oder manuell testen)
 
 ### Problem: Status bleibt auf "Free"
 
-**L�sung**:
-1. Pr�fe `App_Data/Purchases/{userId}.json`
+**Lösung**:
+1. Prüfe `App_Data/Purchases/{userId}.json`
 2. Sollte enthalten:
    ```json
    {
@@ -245,12 +245,12 @@ App_Data/
      "PlanId": "premium"
    }
    ```
-3. Falls nicht: Webhook-Empfang pr�fen (siehe Logs)
+3. Falls nicht: Webhook-Empfang prüfen (siehe Logs)
 
 ### Problem: 401 Unauthorized beim Webhook
 
-**L�sung**:
-1. Pr�fe `appsettings.json`:
+**Lösung**:
+1. Prüfe `appsettings.json`:
    ```json
    {
      "AzureAd": {
@@ -258,34 +258,34 @@ App_Data/
      }
    }
    ```
-2. ClientId muss mit Partner Center �bereinstimmen
+2. ClientId muss mit Partner Center übereinstimmen
 
-## ?? Weitere Dokumentation
+## 📚 Weitere Dokumentation
 
-- **Vollst�ndige Dokumentation**: `MARKETPLACE_WEBHOOK_README.md`
+- **Vollständige Dokumentation**: `MARKETPLACE_WEBHOOK_README.md`
 - **Code-Beispiele**: `Examples/PremiumAccessExamples.cs`
 - **Microsoft Docs**: [SaaS fulfillment APIs](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)
 
-## ? Checkliste f�r Partner Center
+## ✅ Checkliste für Partner Center
 
 - [ ] Webhook-URL konfiguriert: `https://your-domain.com/api/MarketplaceWebhook`
 - [ ] Azure AD Client ID eingetragen
 - [ ] Tenant ID eingetragen
 - [ ] Plan-IDs notiert und in `appsettings.json` eingetragen
-- [ ] Testsubskription durchgef�hrt
-- [ ] Webhook-Logs gepr�ft
+- [ ] Testsubskription durchgeführt
+- [ ] Webhook-Logs geprüft
 
-## ?? Fertig!
+## 🎉 Fertig!
 
 Das System ist jetzt bereit:
-- ? Automatische Premium-Aktivierung bei Kauf
-- ? Automatische Downgrades bei K�ndigung
-- ? Suspension-Handling bei Zahlungsproblemen
-- ? Plan-Wechsel-Unterst�tzung
-- ? Einfache Integration in deinen Code
+- ✅ Automatische Premium-Aktivierung bei Kauf
+- ✅ Automatische Downgrades bei Kündigung
+- ✅ Suspension-Handling bei Zahlungsproblemen
+- ✅ Plan-Wechsel-Unterstützung
+- ✅ Einfache Integration in deinen Code
 
-**N�chste Schritte**:
+**Nächste Schritte**:
 1. Plan-IDs in `appsettings.json` eintragen
 2. Webhook-URL im Partner Center konfigurieren
-3. Testsubskription durchf�hren
+3. Testsubskription durchführen
 4. Premium-Features in deiner App verwenden!

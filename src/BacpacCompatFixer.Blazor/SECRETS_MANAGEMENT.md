@@ -1,17 +1,17 @@
-# ?? Secrets Management - BacpacCompatFixer
+﻿# 🔐 Secrets Management - BacpacCompatFixer
 
-## ?? WICHTIG: Secrets-Konfiguration f�r dieses Repository
+## ⚠️ WICHTIG: Secrets-Konfiguration für dieses Repository
 
 ### Wo werden Secrets gespeichert?
 
 **Dieses Repository verwendet:**
-- ? **Azure App Service Environment Variables** (Production)
-- ? **User Secrets** (Development)
-- ? **NIEMALS in appsettings.json**
+- ✅ **Azure App Service Environment Variables** (Production)
+- ✅ **User Secrets** (Development)
+- ❌ **NIEMALS in appsettings.json**
 
 ---
 
-## ?? Setup-Anleitung
+## ⚙️ Setup-Anleitung
 
 ### 1. Lokale Entwicklung (User Secrets)
 
@@ -34,9 +34,9 @@ AzureAd:ClientSecret = your-secret-here
 
 #### Option A: Azure Portal
 ```
-1. Azure Portal ? Ihr App Service
-2. Settings ? Configuration
-3. Application settings ? + New application setting
+1. Azure Portal → Ihr App Service
+2. Settings → Configuration
+3. Application settings → + New application setting
 4. Name: AzureAd__ClientSecret  (Doppelter Unterstrich!)
 5. Value: your-client-secret
 6. Save
@@ -60,9 +60,9 @@ Set-AzWebApp `
 
 ---
 
-## ?? appsettings.json Struktur
+## 📄 appsettings.json Struktur
 
-### ? Richtig (ohne Secret):
+### ✅ Richtig (ohne Secret):
 ```json
 {
   "AzureAd": {
@@ -73,32 +73,32 @@ Set-AzWebApp `
 }
 ```
 
-### ? Falsch (Secret im Code):
+### ❌ Falsch (Secret im Code):
 ```json
 {
   "AzureAd": {
     "TenantId": "your-tenant-id",
     "ClientId": "your-client-id",
-    "ClientSecret": "secret-here"  // ? NIEMALS SO!
+    "ClientSecret": "secret-here"  // ❌ NIEMALS SO!
   }
 }
 ```
 
 ---
 
-## ?? Wie funktioniert es?
+## 🔄 Wie funktioniert es?
 
 ### ASP.NET Core Konfiguration:
 
 ```csharp
-// Program.cs l�dt automatisch in dieser Reihenfolge:
+// Program.cs lädt automatisch in dieser Reihenfolge:
 1. appsettings.json
 2. appsettings.{Environment}.json
 3. User Secrets (Development)
 4. Environment Variables (immer)
 5. Command Line Arguments
 
-// Environment Variables �berschreiben appsettings.json!
+// Environment Variables überschreiben appsettings.json!
 ```
 
 ### Beispiel:
@@ -111,29 +111,29 @@ Set-AzWebApp `
   }
 }
 
-// Environment Variable (�berschreibt!)
+// Environment Variable (überschreibt!)
 AzureAd__ClientSecret = "secret-xyz"
 
 // Ergebnis in _configuration:
 {
   "AzureAd": {
     "ClientId": "app-id-123",
-    "ClientSecret": "secret-xyz"  ? Aus Environment!
+    "ClientSecret": "secret-xyz"  → Aus Environment!
   }
 }
 ```
 
 ---
 
-## ??? Security Best Practices
+## 🔒 Security Best Practices
 
-### ? DO:
+### ✅ DO:
 - Secrets in Azure Key Vault speichern (noch besser!)
-- User Secrets f�r lokale Entwicklung
-- Environment Variables f�r Production
-- `.gitignore` enth�lt `appsettings.Development.json` und `secrets.json`
+- User Secrets für lokale Entwicklung
+- Environment Variables für Production
+- `.gitignore` enthält `appsettings.Development.json` und `secrets.json`
 
-### ? DON'T:
+### ❌ DON'T:
 - Secrets in Git committen
 - Secrets in appsettings.json
 - Secrets in Code hardcoden
@@ -141,7 +141,7 @@ AzureAd__ClientSecret = "secret-xyz"
 
 ---
 
-## ?? Azure Key Vault (Empfohlen f�r Production)
+## 🔐 Azure Key Vault (Empfohlen für Production)
 
 ### Setup:
 
@@ -152,13 +152,13 @@ az keyvault create \
   --resource-group your-rg \
   --location westeurope
 
-# 2. Secret hinzuf�gen
+# 2. Secret hinzufügen
 az keyvault secret set \
   --vault-name your-keyvault \
   --name AzureAd--ClientSecret \
   --value "your-secret"
 
-# 3. App Service Zugriff gew�hren
+# 3. App Service Zugriff gewähren
 az webapp identity assign \
   --name your-app-name \
   --resource-group your-rg
@@ -181,7 +181,7 @@ builder.Configuration.AddAzureKeyVault(
 
 ---
 
-## ?? �bersicht: Wo sind welche Secrets?
+## 🗺️ Übersicht: Wo sind welche Secrets?
 
 | Environment | ClientSecret | TenantId | ClientId |
 |-------------|--------------|----------|----------|
@@ -192,7 +192,7 @@ builder.Configuration.AddAzureKeyVault(
 
 ---
 
-## ?? Testing
+## 🧪 Testing
 
 ### Lokaler Test:
 ```bash
@@ -202,19 +202,19 @@ dotnet user-secrets set "AzureAd:ClientSecret" "test-secret"
 # 2. App starten
 dotnet run
 
-# 3. Logs pr�fen:
+# 3. Logs prüfen:
 [Information] Successfully obtained Marketplace API access token
 ```
 
 ### Azure App Service Test:
 ```bash
-# 1. Environment Variable pr�fen
+# 1. Environment Variable prüfen
 az webapp config appsettings list \
   --name your-app-name \
   --resource-group your-rg \
   | grep ClientSecret
 
-# 2. Logs pr�fen
+# 2. Logs prüfen
 az webapp log tail \
   --name your-app-name \
   --resource-group your-rg
@@ -222,13 +222,13 @@ az webapp log tail \
 
 ---
 
-## ?? Troubleshooting
+## 🐛 Troubleshooting
 
 ### Problem: "Azure AD configuration is missing"
 
 **Ursache:** `ClientSecret` nicht gefunden
 
-**L�sung:**
+**Lösung:**
 ```bash
 # Lokale Entwicklung:
 dotnet user-secrets set "AzureAd:ClientSecret" "your-secret"
@@ -244,24 +244,24 @@ az webapp config appsettings set \
 
 **Ursache:** Falsche Naming Convention
 
-**L�sung:**
+**Lösung:**
 ```bash
-# ? Richtig (Doppelter Unterstrich):
+# ✅ Richtig (Doppelter Unterstrich):
 AzureAd__ClientSecret
 
-# ? Falsch (einfacher Unterstrich):
+# ❌ Falsch (einfacher Unterstrich):
 AzureAd_ClientSecret
 
-# ? Falsch (Punkt):
+# ❌ Falsch (Punkt):
 AzureAd.ClientSecret
 ```
 
 ---
 
-## ?? Checkliste
+## ✅ Checkliste
 
-- [ ] User Secrets f�r Development konfiguriert
-- [ ] `.gitignore` enth�lt `appsettings.Development.json`
+- [ ] User Secrets für Development konfiguriert
+- [ ] `.gitignore` enthält `appsettings.Development.json`
 - [ ] Azure App Service Environment Variable gesetzt
 - [ ] Build erfolgreich
 - [ ] Logs zeigen erfolgreiche Token-Authentifizierung
@@ -269,7 +269,7 @@ AzureAd.ClientSecret
 
 ---
 
-## ?? Wichtige Links
+## 🔗 Wichtige Links
 
 - [ASP.NET Core Configuration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration/)
 - [Safe storage of app secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)

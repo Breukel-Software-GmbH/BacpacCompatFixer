@@ -1,42 +1,42 @@
-# Real-Time API-Based Subscription Verification
+﻿# Real-Time API-Based Subscription Verification
 
-## ? Was wurde implementiert?
+## ✅ Was wurde implementiert?
 
-Die Anwendung pr�ft jetzt **bei jedem Login** den Subscription-Status direkt �ber die **Microsoft Marketplace API** - **OHNE lokale Speicherung**!
+Die Anwendung prüft jetzt **bei jedem Login** den Subscription-Status direkt über die **Microsoft Marketplace API** - **OHNE lokale Speicherung**!
 
-## ?? Wie es funktioniert
+## 🔄 Wie es funktioniert
 
 ### Bei jedem Benutzer-Login:
 
 ```
-User Login ? VerifyPurchaseAsync(email)
-                      ?
+User Login → VerifyPurchaseAsync(email)
+                      ▼
             Cache-Check (5 Min.)
-                      ?
+                      ▼
               Cache Miss/Expired
-                      ?
+                      ▼
      GET https://marketplaceapi.microsoft.com/api/saas/subscriptions
-                      ?
+                      ▼
            Find user's subscription
-                      ?
-           Check PlanId ? Premium?
-                      ?
+                      ▼
+           Check PlanId → Premium?
+                      ▼
           Return UserPurchaseStatus
-                      ?
-           Cache f�r 5 Minuten
+                      ▼
+           Cache für 5 Minuten
 ```
 
 ### Keine lokale Speicherung:
-- ? Keine JSON-Dateien
-- ? Kein File-System
-- ? **100% API-basiert**
-- ? **Optional: 5-Minuten-Cache** (reduziert API-Calls)
+- ✅ Keine JSON-Dateien
+- ✅ Kein File-System
+- ✅ **100% API-basiert**
+- ✅ **Optional: 5-Minuten-Cache** (reduziert API-Calls)
 
-## ?? Neue Dateien
+## 📁 Neue Dateien
 
 ### 1. **MarketplaceAuthService.cs**
 - Authentifizierung mit Azure AD
-- Holt Access Token f�r Marketplace API
+- Holt Access Token für Marketplace API
 - Token-Caching (~55 Minuten)
 
 ### 2. **MarketplaceApiService.cs**
@@ -51,23 +51,23 @@ User Login ? VerifyPurchaseAsync(email)
 - Optional: 5-Minuten-Cache (konfigurierbar)
 - Webhook invalidiert Cache
 
-## ?? Konfiguration
+## ⚙️ Konfiguration
 
 ### 1. Azure AD App Registration
 
 **Schritt 1: Client Secret erstellen**
 
 1. Gehe zu [Azure Portal](https://portal.azure.com)
-2. **Azure Active Directory** ? **App registrations**
-3. W�hle deine App aus
-4. **Certificates & secrets** ? **New client secret**
+2. **Azure Active Directory** → **App registrations**
+3. Wähle deine App aus
+4. **Certificates & secrets** → **New client secret**
 5. Beschreibung: "Marketplace API Access"
 6. Expires: 24 Monate (oder nach Bedarf)
-7. **Add** ? **Kopiere den Secret Value!**
+7. **Add** → **Kopiere den Secret Value!**
 
 **Schritt 2: API Permissions (optional, sollten schon vorhanden sein)**
 
-1. **API permissions** ? **Add a permission**
+1. **API permissions** → **Add a permission**
 2. **APIs my organization uses**
 3. Suche nach: `Microsoft Marketplace` oder verwende die ID `20e940b3-4c77-4b0b-9a53-9e16a1b010a7`
 4. **Application permissions** (nicht Delegated)
@@ -97,11 +97,11 @@ User Login ? VerifyPurchaseAsync(email)
 ### 3. Plan-IDs aus Partner Center
 
 1. Gehe zu [Partner Center](https://partner.microsoft.com/)
-2. **Marketplace offers** ? **Dein Angebot** ? **Plan overview**
-3. Kopiere die **Plan ID** f�r jeden Premium-Plan
-4. F�ge sie zu `PremiumPlanIds` hinzu
+2. **Marketplace offers** → **Dein Angebot** → **Plan overview**
+3. Kopiere die **Plan ID** für jeden Premium-Plan
+4. Füge sie zu `PremiumPlanIds` hinzu
 
-## ?? Verwendung
+## 💻 Verwendung
 
 ### In deinem Code:
 
@@ -110,7 +110,7 @@ public class MyComponent
 {
     private readonly IPurchaseVerificationService _purchaseService;
 
-    // Bei jedem Aufruf wird API abgefragt (oder Cache gepr�ft)
+    // Bei jedem Aufruf wird API abgefragt (oder Cache geprüft)
     public async Task<bool> CheckAccess(string userEmail)
     {
         var status = await _purchaseService.VerifyPurchaseAsync(userEmail);
@@ -121,7 +121,7 @@ public class MyComponent
 }
 ```
 
-### Beispiel: Datei-Upload mit Gr��enpr�fung
+### Beispiel: Datei-Upload mit Größenprüfung
 
 ```csharp
 [HttpPost("upload")]
@@ -142,16 +142,16 @@ public async Task<IActionResult> UploadFile(IFormFile file)
 }
 ```
 
-## ?? Cache-Strategie
+## ⚡ Cache-Strategie
 
 ### Standard (empfohlen):
-- ? **EnableCaching: true**
-- ? **CacheDurationMinutes: 5**
+- ✅ **EnableCaching: true**
+- ✅ **CacheDurationMinutes: 5**
 
 **Warum?**
 - Reduziert API-Calls von ~1000/Stunde auf ~12/Stunde pro User
-- Bei 100 Users: 100.000 ? 1.200 API-Calls/Stunde
-- Webhook invalidiert Cache sofort bei �nderungen
+- Bei 100 Users: 100.000 → 1.200 API-Calls/Stunde
+- Webhook invalidiert Cache sofort bei Änderungen
 
 ### Echtzeit (kein Cache):
 ```json
@@ -164,22 +164,22 @@ public async Task<IActionResult> UploadFile(IFormFile file)
 ```
 
 **Wann verwenden?**
-- Nur f�r Tests
+- Nur für Tests
 - Bei sehr wenigen Usern (<10)
-- Bei kritischen Anwendungen wo **jeder** Login gepr�ft werden muss
+- Bei kritischen Anwendungen wo **jeder** Login geprüft werden muss
 
-## ?? Vergleich: Alt vs. Neu
+## ⚖️ Vergleich: Alt vs. Neu
 
-| Feature | Alte L�sung (Dateien) | Neue L�sung (API) |
+| Feature | Alte Lösung (Dateien) | Neue Lösung (API) |
 |---------|----------------------|-------------------|
 | **Speicherung** | JSON-Dateien | Keine (API-Calls) |
-| **Aktualit�t** | Nur bei Webhook | Immer aktuell |
+| **Aktualität** | Nur bei Webhook | Immer aktuell |
 | **Skalierbarkeit** | Probleme bei vielen Users | Perfekt skalierbar |
 | **Load Balancing** | Dateisystem-Locks | Funktioniert einwandfrei |
 | **Status-Quelle** | Lokale Kopie | Microsoft (Single Source of Truth) |
 | **Cache** | Nein | Optional (5 Min.) |
 
-## ?? Security
+## 🔒 Security
 
 ### Access Token:
 - Wird automatisch gecacht (~55 Minuten)
@@ -187,9 +187,9 @@ public async Task<IActionResult> UploadFile(IFormFile file)
 - Automatische Erneuerung bei Ablauf
 
 ### Client Secret:
-?? **Wichtig:** Speichere Client Secret NIEMALS in Git!
+⚠️ **Wichtig:** Speichere Client Secret NIEMALS in Git!
 
-**F�r Produktion:**
+**Für Produktion:**
 ```bash
 # Azure Key Vault (empfohlen)
 az keyvault secret set --vault-name "your-vault" --name "MarketplaceClientSecret" --value "your-secret"
@@ -210,7 +210,7 @@ export AzureAd__ClientSecret="your-secret"
 }
 ```
 
-## ?? Performance & Limits
+## 📈 Performance & Limits
 
 ### Microsoft Marketplace API Limits:
 - **Keine offiziellen Rate Limits dokumentiert**
@@ -225,14 +225,14 @@ export AzureAd__ClientSecret="your-secret"
 | 100 | 6.000/Std | 1.200/Std |
 | 1000 | 60.000/Std | 12.000/Std |
 
-## ?? Troubleshooting
+## 🐛 Troubleshooting
 
 ### Problem: "Failed to authenticate with Azure AD"
 
-**L�sung:**
-1. Pr�fe `AzureAd:TenantId`, `ClientId`, `ClientSecret`
+**Lösung:**
+1. Prüfe `AzureAd:TenantId`, `ClientId`, `ClientSecret`
 2. Stelle sicher, dass Client Secret nicht abgelaufen ist
-3. Pr�fe API Permissions in Azure AD
+3. Prüfe API Permissions in Azure AD
 
 ```bash
 # Test authentication
@@ -245,20 +245,20 @@ curl -X POST https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token \
 
 ### Problem: "No active subscription found"
 
-**L�sung:**
-1. Pr�fe E-Mail-Adresse des Users
-2. Pr�fe Marketplace Portal: Gibt es eine aktive Subscription?
-3. Pr�fe Logs: `Querying Marketplace API for user {Email}`
+**Lösung:**
+1. Prüfe E-Mail-Adresse des Users
+2. Prüfe Marketplace Portal: Gibt es eine aktive Subscription?
+3. Prüfe Logs: `Querying Marketplace API for user {Email}`
 
 ### Problem: User bekommt kein Premium
 
-**L�sung:**
-1. Pr�fe `PremiumPlanIds` in appsettings.json
+**Lösung:**
+1. Prüfe `PremiumPlanIds` in appsettings.json
 2. Logs zeigen: `Plan {PlanId} is NOT premium`
-3. F�ge die richtige Plan-ID hinzu
+3. Füge die richtige Plan-ID hinzu
 4. Cache invalidieren: Warte 5 Minuten oder Neustart
 
-## ?? Logs & Monitoring
+## 📊 Logs & Monitoring
 
 ### Wichtige Log-Events:
 
@@ -284,57 +284,57 @@ curl -X POST https://login.microsoftonline.com/{tenant-id}/oauth2/v2.0/token \
 }
 ```
 
-## ? Testing
+## 🧪 Testing
 
 ### Manueller Test:
 
 1. **User ohne Subscription:**
 ```
-Login ? Logs zeigen "No active subscription" ? Free Tier (500MB)
+Login → Logs zeigen "No active subscription" → Free Tier (500MB)
 ```
 
 2. **User mit Premium-Plan:**
 ```
-Login ? API Call ? "Plan premium is PREMIUM" ? Premium (5GB)
+Login → API Call → "Plan premium is PREMIUM" → Premium (5GB)
 ```
 
 3. **Cache-Test:**
 ```
-1. Login ? API Call
+1. Login → API Call
 2. Logout
-3. Login innerhalb 5 Min ? "Returning cached purchase status"
-4. Warte 6 Min ? Login ? Neuer API Call
+3. Login innerhalb 5 Min → "Returning cached purchase status"
+4. Warte 6 Min → Login → Neuer API Call
 ```
 
 ### Webhook-Test:
 
 ```
 Webhook: ChangePlan to "premium"
-? Log: "Cache invalidated for user test@example.com"
-? N�chster Login: Neuer API Call ? Premium aktiviert
+✅ Log: "Cache invalidated for user test@example.com"
+✅ Nächster Login: Neuer API Call → Premium aktiviert
 ```
 
-## ?? Fertig!
+## 🎉 Fertig!
 
-Das System ist jetzt vollst�ndig API-basiert:
+Das System ist jetzt vollständig API-basiert:
 
-- ? **Kein lokales File-System** mehr
-- ? **Immer aktueller Status** von Microsoft
-- ? **Skalierbar** f�r tausende Users
-- ? **Cache optional** (5 Min. empfohlen)
-- ? **Webhook-Integration** invalidiert Cache
-- ? **Thread-safe** und production-ready
+- ✅ **Kein lokales File-System** mehr
+- ✅ **Immer aktueller Status** von Microsoft
+- ✅ **Skalierbar** für tausende Users
+- ✅ **Cache optional** (5 Min. empfohlen)
+- ✅ **Webhook-Integration** invalidiert Cache
+- ✅ **Thread-safe** und production-ready
 
-## ?? Weitere Ressourcen
+## 🔗 Weitere Ressourcen
 
 - [Microsoft Marketplace SaaS Fulfillment API](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-apis)
 - [Get Publisher Authorization Token](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-registration#how-to-get-the-publishers-authorization-token)
 - [Subscription APIs v2](https://learn.microsoft.com/en-us/partner-center/marketplace-offers/pc-saas-fulfillment-subscription-api)
 
-## ?? Support
+## 💬 Support
 
 Bei Problemen:
-1. Pr�fe Logs (siehe oben)
-2. Pr�fe Azure AD Konfiguration
-3. Pr�fe Partner Center Subscription Status
+1. Prüfe Logs (siehe oben)
+2. Prüfe Azure AD Konfiguration
+3. Prüfe Partner Center Subscription Status
 4. Teste API-Zugriff manuell (siehe Troubleshooting)

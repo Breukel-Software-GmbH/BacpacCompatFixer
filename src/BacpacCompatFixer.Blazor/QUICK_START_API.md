@@ -1,32 +1,32 @@
-# ?? Quick Start: API-basierte Subscription-Pr�fung
+﻿# 🚀 Quick Start: API-basierte Subscription-Prüfung
 
-## ? Setup in 3 Schritten
+## ⚙️ Setup in 3 Schritten
 
-### 1?? Azure AD Client Secret erstellen
+### 1️⃣ Azure AD Client Secret erstellen
 
 ```
-Azure Portal ? Azure Active Directory ? App registrations ? Deine App
-? Certificates & secrets ? New client secret ? Kopiere Secret Value
+Azure Portal → Azure Active Directory → App registrations → Deine App
+→ Certificates & secrets → New client secret → Kopiere Secret Value
 ```
 
-### 2?? appsettings.json konfigurieren
+### 2️⃣ appsettings.json konfigurieren
 
 ```json
 {
   "AzureAd": {
     "TenantId": "DEINE-TENANT-ID",
     "ClientId": "DEINE-CLIENT-ID",
-    "ClientSecret": "DEIN-CLIENT-SECRET"  ? NEU!
+    "ClientSecret": "DEIN-CLIENT-SECRET"  → NEU!
   },
   "Marketplace": {
-    "PremiumPlanIds": ["premium", "pro"],   ? Deine Plan-IDs
-    "EnableCaching": true,                  ? Empfohlen
+    "PremiumPlanIds": ["premium", "pro"],   → Deine Plan-IDs
+    "EnableCaching": true,                  → Empfohlen
     "CacheDurationMinutes": 5
   }
 }
 ```
 
-### 3?? Fertig! ??
+### 3️⃣ Fertig! 🎉
 
 ```csharp
 // Bei jedem Login wird API abgefragt:
@@ -39,7 +39,7 @@ if (status.HasPurchased && status.Status == SubscriptionStatus.Active)
 
 ---
 
-## ?? Wichtige Befehle
+## 💻 Wichtige Befehle
 
 ### Client Secret in User Secrets speichern (Development):
 ```bash
@@ -62,11 +62,11 @@ dotnet build
 
 ---
 
-## ?? Wo finde ich die Plan-IDs?
+## 🔍 Wo finde ich die Plan-IDs?
 
 ```
-Partner Center ? Marketplace offers ? Dein Angebot 
-? Plan overview ? Kopiere "Plan ID"
+Partner Center → Marketplace offers → Dein Angebot 
+→ Plan overview → Kopiere "Plan ID"
 ```
 
 Beispiele:
@@ -77,24 +77,24 @@ Beispiele:
 
 ---
 
-## ?? Wie funktioniert es?
+## 🔄 Wie funktioniert es?
 
 ```
 User Login
-    ?
+    ▼
 Check Cache (5 Min.)
-    ? (miss)
+    ▼ (miss)
 API Call: GET /api/saas/subscriptions
-    ?
+    ▼
 Find user's subscription
-    ?
-planId in PremiumPlanIds? ? Yes ? Premium (5GB)
-                          ? No  ? Free (500MB)
+    ▼
+planId in PremiumPlanIds? → Yes → Premium (5GB)
+                          └ No  → Free (500MB)
 ```
 
 ---
 
-## ?? Cache aktivieren/deaktivieren
+## ⚡ Cache aktivieren/deaktivieren
 
 ### Mit Cache (empfohlen):
 ```json
@@ -111,82 +111,82 @@ planId in PremiumPlanIds? ? Yes ? Premium (5GB)
 ```
 - Jeder Login = API-Call
 - Immer aktuellster Status
-- Nur f�r kleine Anwendungen (<10 Users)
+- Nur für kleine Anwendungen (<10 Users)
 
 ---
 
-## ?? H�ufige Probleme
+## ⚠️ Häufige Probleme
 
-### ? "Failed to authenticate with Azure AD"
-**L�sung:** Pr�fe `TenantId`, `ClientId`, `ClientSecret`
+### ❌ "Failed to authenticate with Azure AD"
+**Lösung:** Prüfe `TenantId`, `ClientId`, `ClientSecret`
 
-### ? "No active subscription found"
-**L�sung:** Pr�fe:
+### ❌ "No active subscription found"
+**Lösung:** Prüfe:
 1. User hat Subscription in Partner Center?
-2. E-Mail-Adresse stimmt �berein?
+2. E-Mail-Adresse stimmt überein?
 3. Subscription Status = "Subscribed"?
 
-### ? User bekommt kein Premium
-**L�sung:**
-1. Pr�fe `PremiumPlanIds` in appsettings.json
+### ⚠️ User bekommt kein Premium
+**Lösung:**
+1. Prüfe `PremiumPlanIds` in appsettings.json
 2. Logs: `Plan X is NOT premium`
-3. F�ge Plan-ID hinzu
+3. Füge Plan-ID hinzu
 4. Warte 5 Min (Cache) oder App neu starten
 
 ---
 
-## ?? Testing
+## 🧪 Testing
 
 ### Test 1: User ohne Subscription
 ```
-Login ? Logs: "No active subscription" ? Free Tier (500MB)
+Login → Logs: "No active subscription" → Free Tier (500MB)
 ```
 
 ### Test 2: User mit Premium
 ```
-Login ? API Call ? "Plan premium is PREMIUM" ? Premium (5GB)
+Login → API Call → "Plan premium is PREMIUM" → Premium (5GB)
 ```
 
 ### Test 3: Cache
 ```
-1. Login ? API Call
-2. Logout ? Login (< 5 Min) ? "Returning cached"
-3. Warte 6 Min ? Login ? Neuer API Call
+1. Login → API Call
+2. Logout → Login (< 5 Min) → "Returning cached"
+3. Warte 6 Min → Login → Neuer API Call
 ```
 
 ---
 
-## ?? Neue Dateien
+## 📁 Neue Dateien
 
 | Datei | Beschreibung |
 |-------|-------------|
 | `MarketplaceAuthService.cs` | Azure AD Authentication |
 | `MarketplaceApiService.cs` | API Calls zu Microsoft |
-| `RealTimePurchaseVerificationService.cs` | Ersetzt alte Datei-L�sung |
+| `RealTimePurchaseVerificationService.cs` | Ersetzt alte Datei-Lösung |
 
 ---
 
-## ? Vorteile der neuen L�sung
+## ✅ Vorteile der neuen Lösung
 
 | Feature | Alt (Dateien) | Neu (API) |
 |---------|--------------|-----------|
-| Speicherung | JSON-Dateien | ? Keine |
-| Aktualit�t | Nur bei Webhook | ? Immer |
-| Skalierung | Problematisch | ? Perfekt |
-| Load Balancing | File-Locks | ? Funktioniert |
+| Speicherung | JSON-Dateien | ✅ Keine |
+| Aktualität | Nur bei Webhook | ✅ Immer |
+| Skalierung | Problematisch | ✅ Perfekt |
+| Load Balancing | File-Locks | ✅ Funktioniert |
 
 ---
 
-## ?? Vollst�ndige Doku
+## 📚 Vollständige Doku
 
 Siehe: `REALTIME_API_VERIFICATION_README.md`
 
 ---
 
-## ?? Hilfe
+## 💬 Hilfe
 
-1. Pr�fe Logs (siehe oben)
-2. Pr�fe Azure AD Konfiguration
+1. Prüfe Logs (siehe oben)
+2. Prüfe Azure AD Konfiguration
 3. Teste API manuell:
 
 ```bash

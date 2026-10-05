@@ -1,22 +1,22 @@
-# Migration Guide: Datei-basiert ? API-basiert
+﻿# Migration Guide: Datei-basiert → API-basiert
 
-## ?? �bersicht
+## 📋 Übersicht
 
-Dieser Guide hilft dir beim Umstieg von der **dateibasierten** zur **API-basierten** Subscription-Pr�fung.
+Dieser Guide hilft dir beim Umstieg von der **dateibasierten** zur **API-basierten** Subscription-Prüfung.
 
-## ?? Wichtige �nderungen
+## ⚠️ Wichtige Änderungen
 
-### Was sich NICHT �ndert:
-- ? Interface `IPurchaseVerificationService` bleibt gleich
-- ? Dein bestehender Code funktioniert ohne �nderungen
-- ? Webhook-Controller funktioniert weiterhin
+### Was sich NICHT ändert:
+- ✅ Interface `IPurchaseVerificationService` bleibt gleich
+- ✅ Dein bestehender Code funktioniert ohne Änderungen
+- ✅ Webhook-Controller funktioniert weiterhin
 
-### Was sich �ndert:
-- ? Keine `App_Data/Purchases/` Dateien mehr
-- ? Stattdessen: Echtzeitabfrage der Microsoft Marketplace API
-- ? Neue Konfiguration: `ClientSecret` ben�tigt
+### Was sich ändert:
+- ✅ Keine `App_Data/Purchases/` Dateien mehr
+- 🔄 Stattdessen: Echtzeitabfrage der Microsoft Marketplace API
+- ⚠️ Neue Konfiguration: `ClientSecret` benötigt
 
-## ?? Migration in 5 Schritten
+## 🔄 Migration in 5 Schritten
 
 ### Schritt 1: Backup erstellen (Optional)
 
@@ -24,20 +24,20 @@ Dieser Guide hilft dir beim Umstieg von der **dateibasierten** zur **API-basiert
 # Sichere alte Purchase-Daten
 xcopy "src\BacpacCompatFixer.Blazor\App_Data\Purchases" "Backup\Purchases" /E /I
 
-# Die Dateien werden nicht mehr ben�tigt, aber als Backup sinnvoll
+# Die Dateien werden nicht mehr benötigt, aber als Backup sinnvoll
 ```
 
 ### Schritt 2: Azure AD Client Secret erstellen
 
 1. Gehe zu [Azure Portal](https://portal.azure.com)
-2. **Azure Active Directory** ? **App registrations**
-3. W�hle deine App
-4. **Certificates & secrets** ? **New client secret**
+2. **Azure Active Directory** → **App registrations**
+3. Wähle deine App
+4. **Certificates & secrets** → **New client secret**
 5. Beschreibung: `Marketplace API Access`
 6. Expires: `24 months` (empfohlen)
-7. **Add** ? **Kopiere den Secret Value!**
+7. **Add** → **Kopiere den Secret Value!**
 
-?? **Wichtig:** Du siehst den Secret nur EINMAL! Speichere ihn sicher.
+⚠️ **Wichtig:** Du siehst den Secret nur EINMAL! Speichere ihn sicher.
 
 ### Schritt 3: appsettings.json erweitern
 
@@ -57,19 +57,19 @@ xcopy "src\BacpacCompatFixer.Blazor\App_Data\Purchases" "Backup\Purchases" /E /I
   "AzureAd": {
     "TenantId": "common",
     "ClientId": "your-client-id",
-    "ClientSecret": "your-client-secret"  ? NEU
+    "ClientSecret": "your-client-secret"  → NEU
   },
   "Marketplace": {
-    "PremiumPlanIds": ["premium", "pro"],  ? NEU (vorher hardcoded)
-    "EnableCaching": true,                 ? NEU (empfohlen)
-    "CacheDurationMinutes": 5              ? NEU
+    "PremiumPlanIds": ["premium", "pro"],  → NEU (vorher hardcoded)
+    "EnableCaching": true,                 → NEU (empfohlen)
+    "CacheDurationMinutes": 5              → NEU
   }
 }
 ```
 
 ### Schritt 4: User Secrets einrichten (Development)
 
-**F�r lokale Entwicklung** (empfohlen):
+**Für lokale Entwicklung** (empfohlen):
 
 ```bash
 cd src\BacpacCompatFixer.Blazor
@@ -81,7 +81,7 @@ dotnet user-secrets set "AzureAd:ClientSecret" "your-secret-here"
 dotnet user-secrets list
 ```
 
-**F�r Produktion:**
+**Für Produktion:**
 - Azure Key Vault (empfohlen)
 - Environment Variables
 - Azure App Service Configuration
@@ -95,12 +95,12 @@ dotnet build
 # Test lokal
 dotnet run
 
-# Pr�fe Logs:
+# Prüfe Logs:
 # [Information] Successfully obtained Marketplace API access token
 # [Information] Querying Marketplace API for user ...
 ```
 
-## ?? Vergleich: Alt vs. Neu
+## ⚖️ Vergleich: Alt vs. Neu
 
 ### Alte Implementierung (Dateien):
 
@@ -119,10 +119,10 @@ public async Task<UserPurchaseStatus> VerifyPurchaseAsync(string userId)
 ```
 
 **Probleme:**
-- ? Nur aktuell nach Webhook
-- ? File-Locks bei vielen Usern
-- ? Nicht skalierbar (Load Balancing)
-- ? Datenverlust bei Server-Wechsel
+- ❌ Nur aktuell nach Webhook
+- ❌ File-Locks bei vielen Usern
+- ❌ Nicht skalierbar (Load Balancing)
+- ❌ Datenverlust bei Server-Wechsel
 
 ### Neue Implementierung (API):
 
@@ -142,19 +142,19 @@ public async Task<UserPurchaseStatus> VerifyPurchaseAsync(string userId)
 ```
 
 **Vorteile:**
-- ? Immer aktueller Status
-- ? Keine File-Locks
-- ? Perfekt skalierbar
-- ? Funktioniert mit Load Balancing
-- ? Single Source of Truth (Microsoft)
+- ✅ Immer aktueller Status
+- ✅ Keine File-Locks
+- ✅ Perfekt skalierbar
+- ✅ Funktioniert mit Load Balancing
+- ✅ Single Source of Truth (Microsoft)
 
-## ?? Daten-Migration
+## 🔄 Daten-Migration
 
-### M�ssen alte Dateien migriert werden?
+### Müssen alte Dateien migriert werden?
 
-**Nein!** Die API-basierte L�sung ben�tigt keine lokalen Daten.
+**Nein!** Die API-basierte Lösung benötigt keine lokalen Daten.
 
-**Aber:** F�r die �bergangsphase kannst du optional einen "Hybrid-Modus" implementieren:
+**Aber:** Für die Übergangsphase kannst du optional einen "Hybrid-Modus" implementieren:
 
 ```csharp
 public async Task<UserPurchaseStatus> VerifyPurchaseAsync(string userId)
@@ -174,9 +174,9 @@ public async Task<UserPurchaseStatus> VerifyPurchaseAsync(string userId)
 }
 ```
 
-Das ist aber **nicht empfohlen** - die API-L�sung sollte ausreichen.
+Das ist aber **nicht empfohlen** - die API-Lösung sollte ausreichen.
 
-## ?? Testing nach Migration
+## 🧪 Testing nach Migration
 
 ### Test 1: Authentifizierung
 
@@ -219,18 +219,18 @@ dotnet run
 [Information] Querying Marketplace API in real-time for user test@example.com
 ```
 
-## ?? Security Checkliste
+## 🔒 Security Checkliste
 
 - [ ] Client Secret NICHT in Git committed
-- [ ] User Secrets f�r Development eingerichtet
-- [ ] Azure Key Vault f�r Production konfiguriert
-- [ ] API Permissions in Azure AD gepr�ft
+- [ ] User Secrets für Development eingerichtet
+- [ ] Azure Key Vault für Production konfiguriert
+- [ ] API Permissions in Azure AD geprüft
 - [ ] HTTPS erzwungen (bereits in Program.cs)
 - [ ] Logs enthalten keine Secrets
 
-## ?? Rollback-Plan
+## ⏪ Rollback-Plan
 
-Falls Probleme auftreten, kannst du zur alten L�sung zur�ckkehren:
+Falls Probleme auftreten, kannst du zur alten Lösung zurückkehren:
 
 ### Schritt 1: Service umschalten
 
@@ -254,39 +254,39 @@ dotnet run
 Die alte Service-Datei wurde als Backup gespeichert:
 - `PurchaseVerificationService.cs.old`
 
-## ?? Performance-Verbesserungen
+## 📈 Performance-Verbesserungen
 
 ### Vorher (Dateien):
 
 ```
-User Login ? File.Exists() ? File.ReadAllTextAsync() ? Deserialize
-Zeit: ~5-20ms (abh�ngig von Disk I/O)
+User Login → File.Exists() → File.ReadAllTextAsync() → Deserialize
+Zeit: ~5-20ms (abhängig von Disk I/O)
 Problem: File-Locks bei vielen gleichzeitigen Logins
 ```
 
 ### Nachher (API + Cache):
 
 ```
-User Login ? Cache-Check (< 1ms) ? Cache Hit!
+User Login → Cache-Check (< 1ms) → Cache Hit!
 Zeit: < 1ms
 
 Bei Cache Miss:
-User Login ? API Call (50-200ms) ? Cache f�r 5 Min
+User Login → API Call (50-200ms) → Cache für 5 Min
 Zeit: 50-200ms (nur 1x pro 5 Min pro User)
 ```
 
-## ?? Empfohlene Einstellungen
+## ⚙️ Empfohlene Einstellungen
 
 ### Development:
 ```json
 {
   "Marketplace": {
-    "EnableCaching": false,      ? Kein Cache f�r Tests
+    "EnableCaching": false,      → Kein Cache für Tests
     "CacheDurationMinutes": 0
   },
   "Logging": {
     "LogLevel": {
-      "BacpacCompatFixer.Blazor.Services": "Debug"  ? Mehr Logs
+      "BacpacCompatFixer.Blazor.Services": "Debug"  → Mehr Logs
     }
   }
 }
@@ -296,8 +296,8 @@ Zeit: 50-200ms (nur 1x pro 5 Min pro User)
 ```json
 {
   "Marketplace": {
-    "EnableCaching": true,       ? Cache aktivieren
-    "CacheDurationMinutes": 5    ? 5 Minuten optimal
+    "EnableCaching": true,       → Cache aktivieren
+    "CacheDurationMinutes": 5    → 5 Minuten optimal
   },
   "Logging": {
     "LogLevel": {
@@ -307,27 +307,27 @@ Zeit: 50-200ms (nur 1x pro 5 Min pro User)
 }
 ```
 
-## ? Post-Migration Checkliste
+## ✅ Post-Migration Checkliste
 
 - [ ] Client Secret erstellt und gespeichert
 - [ ] appsettings.json aktualisiert
 - [ ] User Secrets konfiguriert (Development)
 - [ ] Build erfolgreich
 - [ ] Test 1: Authentifizierung erfolgreich
-- [ ] Test 2: User ohne Subscription ? Free Tier
-- [ ] Test 3: User mit Premium ? Premium-Zugang
+- [ ] Test 2: User ohne Subscription → Free Tier
+- [ ] Test 3: User mit Premium → Premium-Zugang
 - [ ] Test 4: Cache funktioniert
-- [ ] Logs gepr�ft
+- [ ] Logs geprüft
 - [ ] Production deployed
-- [ ] Alte `App_Data/Purchases/` Dateien k�nnen gel�scht werden (nach Backup!)
+- [ ] Alte `App_Data/Purchases/` Dateien können gelöscht werden (nach Backup!)
 
-## ?? H�ufige Probleme nach Migration
+## ⚠️ Häufige Probleme nach Migration
 
 ### Problem: "Azure AD configuration is missing"
 
 **Ursache:** `ClientSecret` fehlt
 
-**L�sung:**
+**Lösung:**
 ```bash
 dotnet user-secrets set "AzureAd:ClientSecret" "your-secret"
 ```
@@ -336,24 +336,24 @@ dotnet user-secrets set "AzureAd:ClientSecret" "your-secret"
 
 **Ursache:** Falsches Secret oder abgelaufen
 
-**L�sung:**
+**Lösung:**
 1. Erstelle neues Client Secret in Azure Portal
 2. Update appsettings.json oder User Secrets
 
 ### Problem: Alle Users bekommen Free Tier
 
-**Ursache:** API gibt keine Subscriptions zur�ck
+**Ursache:** API gibt keine Subscriptions zurück
 
-**L�sung:**
-1. Pr�fe API Permissions in Azure AD
-2. Pr�fe ob Subscriptions in Partner Center existieren
-3. Pr�fe Logs: `Retrieved X subscriptions from Marketplace API`
+**Lösung:**
+1. Prüfe API Permissions in Azure AD
+2. Prüfe ob Subscriptions in Partner Center existieren
+3. Prüfe Logs: `Retrieved X subscriptions from Marketplace API`
 
 ### Problem: Performance schlechter
 
 **Ursache:** Cache deaktiviert
 
-**L�sung:**
+**Lösung:**
 ```json
 {
   "Marketplace": {
@@ -363,21 +363,21 @@ dotnet user-secrets set "AzureAd:ClientSecret" "your-secret"
 }
 ```
 
-## ?? Support
+## 💬 Support
 
 Bei weiteren Fragen:
-1. Pr�fe `REALTIME_API_VERIFICATION_README.md` f�r Details
-2. Pr�fe `QUICK_START_API.md` f�r Quick Reference
+1. Prüfe `REALTIME_API_VERIFICATION_README.md` für Details
+2. Prüfe `QUICK_START_API.md` für Quick Reference
 3. Schau dir die Logs an (siehe oben)
 
-## ?? Fertig!
+## 🎉 Fertig!
 
 Nach erfolgreicher Migration hast du:
 
-- ? Keine lokalen Dateien mehr
-- ? Echtzeitabfrage von Microsoft
-- ? Perfekte Skalierbarkeit
-- ? Cache f�r Performance
-- ? Production-ready Solution
+- ✅ Keine lokalen Dateien mehr
+- ✅ Echtzeitabfrage von Microsoft
+- ✅ Perfekte Skalierbarkeit
+- ✅ Cache für Performance
+- ✅ Production-ready Solution
 
-**Wichtig:** Alte `App_Data/Purchases/` Dateien k�nnen nach erfolgreicher Migration gel�scht werden!
+**Wichtig:** Alte `App_Data/Purchases/` Dateien können nach erfolgreicher Migration gelöscht werden!
