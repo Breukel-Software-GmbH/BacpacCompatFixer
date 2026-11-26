@@ -364,3 +364,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Lokale Agenten- und Instruktionsdateien
+AGENTS.md
+INSTRUCTIONS.md
